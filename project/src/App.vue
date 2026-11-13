@@ -338,8 +338,7 @@ onBeforeUnmount(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(40px, 5vw, 88px);
-    padding: 24px clamp(24px, 4vw, 64px);
+    padding: 24px;
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
@@ -347,7 +346,7 @@ onBeforeUnmount(() => {
       radial-gradient(60% 50% at 50% 30%, rgba(120, 90, 255, 0.18), transparent 70%),
       #050510;
   }
-  .intro-side { display: flex; flex: 0 1 600px; min-width: 0; max-width: 600px; max-height: min(94vh, 980px); }
+  .intro-side { display: none; }
   .device {
     /* 按屏幕高度等比放大（iPhone 15 Pro 比例 393:852），最大 980px 高 */
     height: min(94vh, 980px);
@@ -379,12 +378,12 @@ onBeforeUnmount(() => {
   .island {
     display: block;
     position: absolute;
-    top: 22px;
+    top: 18px;
     left: 50%;
     transform: translateX(-50%);
-    width: 118px;
-    height: 34px;
-    border-radius: 20px;
+    width: 104px;
+    height: 30px;
+    border-radius: 18px;
     background: #000;
     z-index: 70;
     pointer-events: none;
@@ -394,18 +393,20 @@ onBeforeUnmount(() => {
     justify-content: space-between;
     align-items: center;
     position: absolute;
-    top: 14px;
-    left: 30px;
-    right: 26px;
-    height: 34px;
+    top: 18px;
+    left: 22px;
+    right: 20px;
+    height: 30px;
     z-index: 65;
-    padding-top: 6px;
+    padding: 0 8px;
     color: #fff;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 600;
     font-family: -apple-system, 'SF Pro Text', 'PingFang SC', system-ui, sans-serif;
     pointer-events: none;
   }
+  .sb-time { width: 64px; }
+  .sb-icons { width: 64px; justify-content: flex-end; }
   .sb-icons { display: inline-flex; gap: 6px; align-items: center; }
   .sb-signal, .sb-wifi, .sb-battery { display: inline-block; background: #fff; }
   .sb-signal { width: 16px; height: 10px; border-radius: 2px; clip-path: polygon(0 100%, 25% 100%, 25% 70%, 50% 70%, 50% 45%, 75% 45%, 75% 20%, 100% 20%, 100% 100%, 0 100%); }
@@ -414,10 +415,10 @@ onBeforeUnmount(() => {
   .home-indicator {
     display: block;
     position: absolute;
-    bottom: 9px;
+    bottom: 16px;
     left: 50%;
     transform: translateX(-50%);
-    width: 134px;
+    width: 120px;
     height: 5px;
     border-radius: 3px;
     background: rgba(255, 255, 255, 0.85);
@@ -433,24 +434,43 @@ onBeforeUnmount(() => {
     overflow: hidden;
     background: var(--bg);
   }
-  /* 屏幕内容区可滚动；顶部留出状态栏与刘海的位置 */
+  /* 内容限制在手机屏幕内，顶部避开刘海，底部避开 Home 条 */
   .app.screen > .game,
   .app.screen > .title {
     position: absolute;
     inset: 0;
-    height: auto;
-    overflow-y: auto;
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
     overflow-x: hidden;
-    padding-top: 62px !important;
-    /* 隐藏滚动条，仍可滚动 */
+    box-sizing: border-box;
+    padding-top: 46px !important;
+    padding-bottom: 20px !important;
     scrollbar-width: none;
     -ms-overflow-style: none;
+  }
+  .app.screen > .game {
+    overflow: hidden;
+  }
+  .app.screen > .title {
+    overflow-y: auto;
+    justify-content: safe center;
   }
   .app.screen > .game::-webkit-scrollbar,
   .app.screen > .title::-webkit-scrollbar {
     display: none;
   }
-  .app.screen > .title { padding-top: 62px; }
+  .app.screen > .title .content {
+    width: min(100%, calc(100% - 28px));
+    gap: 16px;
+    padding: 8px 0 12px;
+  }
+  .app.screen > .title .logo { padding: 8px 0 0; }
+  .app.screen > .title .logo-cn { font-size: 52px; letter-spacing: 8px; padding-left: 8px; }
+  .app.screen > .title .logo-en { margin-top: 8px; letter-spacing: 4px; }
+  .app.screen > .title .logo-ring { width: 150px; height: 150px; }
+  .app.screen > .title .menu { gap: 8px; }
+  .app.screen > .title .menu-btn { padding: 11px 16px; font-size: 15px; border-radius: 14px; }
 }
 
 /* 手机真机：避开刘海与 Home 条 */
