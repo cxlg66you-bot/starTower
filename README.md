@@ -6,7 +6,9 @@
 
 > 一座从地底矿窟修到星空的 50 层观星塔，一段原创冒险。
 
-## 🎮 [免费内部测试 →](https://www.fastmini.cn/gameMt/)
+## 🎮 [在线游玩 →](https://startower-cxj.pages.dev/)
+
+本 fork 已发布到 Cloudflare Pages。原作者的测试地址仍是 [fastmini.cn/gameMt](https://www.fastmini.cn/gameMt/)。
 
 **直接点击上方链接即可开始游戏，无需下载、无需安装。** 手机与电脑浏览器均可打开。
 
@@ -51,7 +53,7 @@
 
 打开页面后仍是游戏。按 `F2` 或 `` ` ``（反引号），或在标题页点「工作台」，会立刻切到一个看起来像 Visual Studio Code 的工作界面，并暂停游戏音乐；再按一次（或双击顶部标题栏）即可回到游戏。
 
-若希望一打开就是工作台，在地址后面加上 `?work=1`。
+若希望一打开就是工作台，打开 [带工作台参数的链接](https://startower-cxj.pages.dev/?work=1)。
 
 ## 快速开始
 
