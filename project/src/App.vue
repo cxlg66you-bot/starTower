@@ -7,7 +7,7 @@ import Modals from './components/Modals.vue'
 import WorkCamouflage from './components/WorkCamouflage.vue'
 import { createHoldRepeat } from './engine/repeat.js'
 import EndingFx from './components/EndingFx.vue'
-import IntroPanel from './components/IntroPanel.vue'
+import GitHubPanel from './components/GitHubPanel.vue'
 import { startBgm, startTitleBgm, stopBgm, setMuted as setAudioMuted } from './engine/audio.js'
 
 const GAME_TITLE = '星穹塔 · Star Dome Tower'
@@ -189,8 +189,8 @@ onBeforeUnmount(() => {
       <div class="home-indicator" aria-hidden="true"></div>
     </div>
 
-    <!-- 电脑端：右侧的游戏介绍与玩法 -->
-    <div class="intro-side"><IntroPanel /></div>
+    <!-- 电脑端：左侧模仿 GitHub，手机在最右侧 -->
+    <div class="github-side"><GitHubPanel /></div>
   </div>
 </template>
 
@@ -210,8 +210,7 @@ onBeforeUnmount(() => {
 .home-indicator {
   display: none;
 }
-.intro-side { display: none; }
-.intro-side > .intro { min-height: 0; }
+.intro-side, .github-side { display: none; }
 
 /* 屏幕本身：所有浮层（弹窗、提示、转场）都相对它定位 */
 .app.screen {
@@ -336,25 +335,35 @@ onBeforeUnmount(() => {
 @media (min-width: 700px) and (pointer: fine) {
   .device-stage {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: flex-end;
+    padding: 0;
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
-    background:
-      radial-gradient(60% 50% at 50% 30%, rgba(120, 90, 255, 0.18), transparent 70%),
-      #050510;
+    background: #ffffff;
+  }
+  .github-side {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+    order: 0;
   }
   .intro-side { display: none; }
   .device {
-    /* 按屏幕高度等比放大（iPhone 15 Pro 比例 393:852），最大 980px 高 */
-    height: min(94vh, 980px);
+    /* 按屏幕高度等比放大（iPhone 15 Pro 比例 393:852），最大 980px 高；靠最右侧 */
+    order: 1;
+    height: min(96vh, 980px);
     aspect-ratio: 393 / 852;
     width: auto;
     min-height: 0;
     flex: none;
+    margin: auto 16px auto 12px;
     padding: 12px;
+    align-self: center;
     border-radius: 62px;
     background: linear-gradient(145deg, #3a3a40, #0b0b0e 40%, #1c1c22);
     box-shadow:
