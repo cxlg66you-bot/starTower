@@ -1,12 +1,57 @@
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
-import { store, actions, applyAudioSettings } from './stores/star.js'
+import { onMounted, onBeforeUnmount, provide, ref, watch } from 'vue'
+import { store, actions, applyAudioSettings, BOSS_FLOORS } from './stores/star.js'
 import TitleScreen from './components/TitleScreen.vue'
 import GameScreen from './components/GameScreen.vue'
 import Modals from './components/Modals.vue'
+import WorkCamouflage from './components/WorkCamouflage.vue'
 import { createHoldRepeat } from './engine/repeat.js'
 import EndingFx from './components/EndingFx.vue'
 import IntroPanel from './components/IntroPanel.vue'
+import { startBgm, startTitleBgm, stopBgm, setMuted as setAudioMuted } from './engine/audio.js'
+
+const GAME_TITLE = '星穹塔 · Star Dome Tower'
+const WORK_TITLE = 'payment-recon — Visual Studio Code'
+const GAME_THEME = '#08071a'
+const WORK_THEME = '#007acc'
+const WORK_ICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='2' fill='%23007acc'/%3E%3Cpath fill='white' d='M3 3h4v4H3zM9 3h4v2H9zM9 6h4v7H9zM3 8h4v5H3z'/%3E%3C/svg%3E"
+
+function shouldStartWorkCover() {
+  const params = new URLSearchParams(location.search)
+  if (params.get('work') === '0') return false
+  if (params.get('work') === '1' || location.hash === '#work') return true
+  return sessionStorage.getItem('star-work-cover') === 'on'
+}
+
+const workCover = ref(shouldStartWorkCover())
+
+function applyWorkCover(on) {
+  workCover.value = on
+  sessionStorage.setItem('star-work-cover', on ? 'on' : 'off')
+  document.title = on ? WORK_TITLE : GAME_TITLE
+  const theme = document.querySelector('meta[name="theme-color"]')
+  if (theme) theme.setAttribute('content', on ? WORK_THEME : GAME_THEME)
+  const icon = document.querySelector('link[rel="icon"]')
+  if (icon) icon.setAttribute('href', on ? WORK_ICON : 'data:,')
+  if (on) {
+    heldKey = null
+    hold.stop()
+    stopBgm()
+    setAudioMuted(true)
+  } else {
+    setAudioMuted(!!store.meta.muted)
+    if (store.screen === 'title' && !store.game) startTitleBgm()
+    else if (store.game) startBgm(store.game.floor, BOSS_FLOORS.includes(store.game.floor))
+  }
+}
+
+function toggleWorkCover(e) {
+  if (e) e.preventDefault()
+  applyWorkCover(!workCover.value)
+}
+
+watch(workCover, (on) => applyWorkCover(on), { immediate: false })
+provide('toggleWorkCover', toggleWorkCover)
 
 const MOVE_KEYS = {
   ArrowUp: 'up', w: 'up', W: 'up',
@@ -40,8 +85,22 @@ function onKeyUp(e) {
   }
 }
 
+function isBossKey(e) {
+  return e.key === 'F2' || e.code === 'Backquote'
+}
+
+function onBossKey(e) {
+  if (isTyping(e)) return
+  if (!isBossKey(e)) return
+  e.preventDefault()
+  e.stopImmediatePropagation()
+  toggleWorkCover()
+}
+
 function onKeyDown(e) {
   if (isTyping(e)) return
+  if (isBossKey(e)) return
+  if (workCover.value) return
   if (store.screen !== 'playing') return
 
   if (e.key === 'Escape') {
@@ -68,18 +127,24 @@ function onKeyDown(e) {
 // 浏览器（尤其是 iPhone Safari）要求音频必须在用户手势中启动：
 // 任何一次点击、触摸或按键都会解锁音频，并在标题页播放背景音乐。
 const GESTURES = ['pointerdown', 'touchend', 'keydown']
+
+
 function onGesture() {
+  if (workCover.value) return
   actions.playTitleMusic()
 }
 
 onMounted(() => {
   applyAudioSettings()
+  if (workCover.value) applyWorkCover(true)
+  window.addEventListener('keydown', onBossKey, true)
   window.addEventListener('keydown', onKeyDown)
   window.addEventListener('keyup', onKeyUp)
   window.addEventListener('blur', () => { heldKey = null; hold.stop() })
   for (const ev of GESTURES) window.addEventListener(ev, onGesture, { passive: true })
 })
 onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onBossKey, true)
   window.removeEventListener('keydown', onKeyDown)
   window.removeEventListener('keyup', onKeyUp)
   hold.stop()
@@ -88,6 +153,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <WorkCamouflage v-if="workCover" @leave="applyWorkCover(false)" />
   <div class="device-stage">
     <div class="device">
       <!-- 仅在电脑上显示的 iPhone 外壳装饰；手机上访问时不显示 -->

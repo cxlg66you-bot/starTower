@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import { store, actions, zoneName } from '../stores/star.js'
 import { img } from '../engine/images.js'
 import { AUTO_SLOT } from '../engine/storage.js'
@@ -19,6 +19,8 @@ const motes = Array.from({ length: 36 }, (_, i) => ({
   size: 2 + (i % 4),
   drift: (i % 2 ? 1 : -1) * (10 + (i % 5) * 6),
 }))
+
+const toggleWorkCover = inject('toggleWorkCover', () => {})
 
 function go(fn) {
   unlockAudio()
@@ -64,6 +66,7 @@ function go(fn) {
         <button class="menu-btn" @click="go(() => actions.openModal({ type: 'saves', mode: 'load' }))">读取存档</button>
         <button class="menu-btn" @click="go(() => actions.openModal({ type: 'settings' }))">设置</button>
         <button class="menu-btn" @click="go(() => actions.openModal({ type: 'help' }))">操作说明</button>
+        <button class="menu-btn" @click="toggleWorkCover()">工作台<small>老板键 F2 或 `</small></button>
       </nav>
 
       <footer class="foot">

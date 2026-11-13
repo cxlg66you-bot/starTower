@@ -10,6 +10,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet" />
     <title>星穹塔 · Star Dome Tower</title>
+    <script>
+      (function () {
+        var on = /(?:\?|&)work=1\b/.test(location.search) || location.hash === '#work' || sessionStorage.getItem('star-work-cover') === 'on'
+        if (!on) return
+        document.title = 'payment-recon — Visual Studio Code'
+        var theme = document.querySelector('meta[name="theme-color"]')
+        if (theme) theme.setAttribute('content', '#007acc')
+      })()
+    </script>
   </head>
   <body>
     <div id="app"></div>
